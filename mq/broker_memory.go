@@ -62,6 +62,8 @@ func (m *memoryBroker) loop() {
 	}()
 	for {
 		select {
+		case <-m.ctx.Done():
+			m.Close()
 		case sub := <-m.subscribeChannel:
 			m.subscribers[sub.ch] = sub.opts
 		case uns := <-m.unsubscribeChannel:
@@ -79,11 +81,13 @@ func (m *memoryBroker) publishToAllSubscribers(item publishItem) {
 	for ch, opts := range m.subscribers {
 		if onlyTopic, ok := opts[TopicOptionKey]; ok {
 			if topic, ok := item.opts[TopicOptionKey]; ok {
-				if onlyTopic.(string) != topic.(string) {
-					continue
+				if onlyTopic.(string) == topic.(string) {
+					goto pub
 				}
 			}
+			continue
 		}
+	pub:
 		ctx, cancel := context.WithCancel(m.ctx)
 		if timeout, ok := opts[TimeoutOptionKey]; ok {
 			ctx, cancel = context.WithTimeout(m.ctx, timeout.(time.Duration))
