@@ -4,19 +4,34 @@ import (
 	"errors"
 )
 
+// ErrBufferCapacityNotEnough is defined error of buffer full
+// When write bytes to buffer and buffer remain space not enough this error will throw.
 var ErrBufferCapacityNotEnough = errors.New("buffer capacity is not enough")
 
+// Buffer is bytes buffer interface
 type Buffer interface {
+	// NextN is get next n bytes in buffer
+	// This method will return count and next bytes.
+	// This method not move bytes pointer.
 	NextN(n int) (int, []byte)
+	// ShiftN is move bytes pointer forward
 	ShiftN(n int) int
+	// ReadN is get next bytes in buffer and move bytes pointer forward.
 	ReadN(n int) (int, []byte)
+	// Size will return bytes length in buffer
 	Size() int
+	// Capacity will return the buffer capacity
 	Capacity() int
+	// Write will write bytes to buffer
+	// When buffer full will throw ErrBufferCapacityNotEnough error
 	Write(p []byte) (int, error)
+	// Reset will reset the buffer
 	Reset()
+	// Bytes will return all bytes in buffer
 	Bytes() []byte
 }
 
+// DefaultBufferCapacity is default buffer Capacity
 const DefaultBufferCapacity = 4096
 
 type ringBuffer struct {
@@ -128,6 +143,7 @@ func (r *ringBuffer) Bytes() []byte {
 	return b
 }
 
+// NewBuffer will create buffer of capacity
 func NewBuffer(capacity int) *ringBuffer {
 	if capacity <= 0 {
 		capacity = DefaultBufferCapacity
