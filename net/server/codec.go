@@ -9,3 +9,15 @@ type Codec interface {
 	// Decode will decode receive data from client
 	Decode(buf buffer.Buffer) []byte
 }
+
+type NothingCodec struct {
+}
+
+func (n *NothingCodec) Encode(b []byte) []byte {
+	return b
+}
+
+func (n *NothingCodec) Decode(buf buffer.Buffer) []byte {
+	_, b := buf.ReadN(buf.Size())
+	return b
+}
