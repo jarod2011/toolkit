@@ -26,12 +26,17 @@ type Logger interface {
 }
 
 // Level is the Log Level
-type Level string
+type Level int
 
 const (
-	Debug Level = "debug"
-	Info  Level = "info"
-	Warn  Level = "warn"
-	Error Level = "error"
-	Fatal Level = "fatal"
+	Debug Level = iota - 1
+	Info
+	Warn
+	Error
+	Fatal
 )
+
+// String is description the log leve name
+func (l Level) String() string {
+	return []string{"debug", "info", "warning", "error", "fatal"}[int(l)+1]
+}
