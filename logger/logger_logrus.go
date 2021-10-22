@@ -41,9 +41,7 @@ func (m *myLogger) ErrorF(format string, args ...interface{}) {
 }
 
 func (m *myLogger) FatalF(format string, args ...interface{}) {
-	if m.lev <= Fatal {
-		m.l.Fatalf(format, args...)
-	}
+	m.l.Fatalf(format, args...)
 }
 
 func (m *myLogger) SetLevel(level Level) {
@@ -98,5 +96,6 @@ func NewLogger(opts ...Option) *myLogger {
 	} else {
 		l.SetFormatter(new(logrus.TextFormatter))
 	}
+	l.SetLevel(logrus.DebugLevel)
 	return newLogger(logrus.NewEntry(l), options.Level)
 }
